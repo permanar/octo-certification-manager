@@ -1,4 +1,4 @@
-package com.oende.bisma_certification;
+package com.oende.octo_certification_manager;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

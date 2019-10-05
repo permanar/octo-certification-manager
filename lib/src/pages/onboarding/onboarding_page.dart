@@ -88,7 +88,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                   ),
                 ),
                 Container(
-                  height: .72 * MediaQuery.of(context).size.height,
+                  height: .74 * MediaQuery.of(context).size.height,
                   child: PageView(
                     controller: _pageController,
                     onPageChanged: (int page) {
