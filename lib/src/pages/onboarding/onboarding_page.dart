@@ -123,39 +123,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                   children: _buildIndicator(),
                 ),
                 _currentPage != _numPages - 1
-                    ? Expanded(
-                        child: Align(
-                          alignment: FractionalOffset.bottomRight,
-                          child: FlatButton(
-                            onPressed: () {
-                              _pageController.nextPage(
-                                duration: Duration(milliseconds: 500),
-                                curve: Curves.easeIn,
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Text(
-                                  "Next",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 5, bottom: 5),
-                                  child: Icon(
-                                    Icons.arrow_forward,
-                                    size: 28,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
+                    ? new NextButton(pageController: _pageController)
                     : Text("")
               ],
             ),
@@ -183,6 +151,51 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
               ),
             )
           : Text(''),
+    );
+  }
+}
+
+class NextButton extends StatelessWidget {
+  const NextButton({
+    Key key,
+    @required PageController pageController,
+  })  : _pageController = pageController,
+        super(key: key);
+
+  final PageController _pageController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Align(
+        alignment: FractionalOffset.bottomRight,
+        child: FlatButton(
+          onPressed: () {
+            _pageController.nextPage(
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeIn,
+            );
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                "Next",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5, bottom: 5),
+                child: Icon(
+                  Icons.arrow_forward,
+                  size: 28,
+                  color: Colors.white,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
