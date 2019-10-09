@@ -16,7 +16,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   SharedPrefs prefs = SharedPrefs();
   bool _isSelected = false;
-  Future<dynamic> _isLogin;
+  bool _isLogin;
 
   void _circleRadioTap() {
     setState(() {
@@ -27,25 +27,28 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    _initSP();
   }
 
   _initSP() {
+    print("initsp");
     bool _isLoginz;
-    prefs.read('login').then((val) => {_isLoginz = val});
-    if (_isLoginz == true) {
-      print("mantaapp if true loginpageee broo!!! => $_isLoginz)}");
-      setState(() {
-        return Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomePage()));
-      });
-    }
+    prefs.read('login').then((val) {
+      _isLoginz = val;
+      if (_isLoginz == true) {
+        print("mantaapp if true loginpageee broo!!! => $_isLoginz)}");
+        setState(() {
+          return Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => HomePage()));
+        });
+      }
+    });
   }
 
   void _loginProcess() {
-    try {
-      prefs.add('login', true);
-      _isLogin = prefs.read('login');
-      // _isLogin = true;
+    prefs.add('login', true);
+    prefs.read('login').then((val) {
+      _isLogin = val;
       print("apasih isinya _isLogin ni kle | try => $_isLogin");
 
       if (_isLogin != null) {
@@ -54,11 +57,10 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => HomePage()));
         });
+      } else {
+        print("Login ape ndak - false ni bro => $_isLogin");
       }
-    } catch (e) {
-      print("apasih isinya _isLogin ni kle | throw => ${prefs.read('login')}");
-      print(e);
-    }
+    });
   }
 
   Widget _circleRadio(isSelected) {
@@ -82,8 +84,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    _initSP();
-
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     ScreenUtil.instance =
         ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
