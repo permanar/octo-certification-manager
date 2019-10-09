@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _initSP();
     initOneSignal();
   }
 
@@ -26,7 +27,6 @@ class _HomePageState extends State<HomePage> {
 
     print("Initiating OneSignal");
     OneSignal.shared.init(APP_ID);
-
     print("Succeed!");
 
     OneSignal.shared
@@ -55,49 +55,29 @@ class _HomePageState extends State<HomePage> {
       // will be called whenever then user's email subscription changes
       // (ie. OneSignal.setEmail(email) is called and the user gets registered
     });
-
-    void _handleNotificationReceived(OSNotification notification) {}
   }
 
+  // Checking if login not proceed at the very beginning, go directly to the login page
+  // Still not sure about this idea but, let's give it a shot
   _initSP() {
-    _isLogin = false;
-    print("1. try di homepage !!! => $_isLogin");
-    prefs.read('login').then((val) => {_isLogin = val});
-    print("2. try di homepage !!! => $_isLogin");
-    if (_isLogin == false) {
-      print("mantaapp if true homepage!!! => $_isLogin)}");
-      setState(() {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => MySecondPage()));
-      });
-    }
-    // try {
-    //   // _isLogin = prefs.read('login') ?? false;
-    //   // print("try di homepage !!! => $_isLogin");
-
-    //   if (prefs.read('login') != true) {
-    //     print("mantaapp if true homepage!!! => ${prefs.read('login')}");
-    //     return Navigator.of(context).pushReplacement(
-    //         MaterialPageRoute(builder: (context) => LoginPage()));
-    //   }
-    // } catch (e) {
-    //   print("masuk di catch nok");
-    //   _isLogin = false;
-    // }
-  }
-
-  _goLoginPage() {
-    return LoginPage();
-    // setState(() {
-    //   Navigator.of(context).pushReplacement(
-    //       MaterialPageRoute(builder: (context) => LoginPage()));
-    // });
+    prefs.read('login').then((val) {
+      _isLogin = val;
+      if (_isLogin != true) {
+        print("mantaapp if condt true homepage!!! => $_isLogin)}");
+        setState(() {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => LoginPage()));
+        });
+      }
+    });
   }
 
   _logoutProcess() {
-    setState(() async {
-      _isLogin = await prefs.delete('login') as bool;
-      print("berhasil delet => ${prefs.read('login')}");
+    setState(() {
+      prefs.delete('login').then((val) {
+        _isLogin = val;
+      });
+      print("berhasil delet => $_isLogin");
     });
   }
 
@@ -109,7 +89,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     print("uda di build $_isLogin");
-    // _initSP();
 
     return Scaffold(
       appBar: AppBar(
