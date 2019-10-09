@@ -1,4 +1,7 @@
+import 'package:bisma_certification/src/pages/login_page.dart';
 import 'package:bisma_certification/src/pages/onboarding/onboarding_content.dart';
+import 'package:bisma_certification/src/utils/page_transition.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -133,7 +136,13 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       bottomSheet: _currentPage == _numPages - 1
           ? InkWell(
               onTap: () {
-                print("get tart!!!");
+                // Navigator.of(context).pushReplacement(
+                //   CupertinoPageRoute(
+                //     builder: (context) => LoginPage(),
+                //   ),
+                // );
+                Navigator.of(context).pushReplacement(
+                    PageTransitionSlideLeft(page: LoginPage()));
               },
               child: Container(
                 height: .1 * MediaQuery.of(context).size.height,
