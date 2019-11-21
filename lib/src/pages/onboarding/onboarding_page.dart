@@ -1,6 +1,8 @@
+import 'package:bisma_certification/src/pages/home_page.dart';
 import 'package:bisma_certification/src/pages/login_page.dart';
 import 'package:bisma_certification/src/pages/onboarding/onboarding_content.dart';
 import 'package:bisma_certification/src/utils/page_transition.dart';
+import 'package:bisma_certification/src/utils/shared_prefs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,12 +13,28 @@ class OnBoardingPage extends StatefulWidget {
 }
 
 class _OnBoardingPageState extends State<OnBoardingPage> {
+  SharedPrefs prefs = SharedPrefs();
   final int _numPages = 3;
   PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
 
-  //TODO Implement the Get Started button
-  void _getStarted() {}
+  @override
+  void initState() {
+    super.initState();
+    // _getStarted();
+  }
+
+  void _getStarted() {
+    print("initstate onboard");
+    prefs.readBool("onboard").then((val) {
+      if (val) {
+        print("ooo yeaaaa onboard borr =>> $val");
+        return Navigator.of(context)
+            .pushReplacement(PageTransitionSlideLeft(page: HomePage()));
+      }
+      return null;
+    });
+  }
 
   List<Widget> _buildIndicator() {
     List<Widget> list = [];
@@ -136,13 +154,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       bottomSheet: _currentPage == _numPages - 1
           ? InkWell(
               onTap: () {
-                // Navigator.of(context).pushReplacement(
-                //   CupertinoPageRoute(
-                //     builder: (context) => LoginPage(),
-                //   ),
-                // );
-                Navigator.of(context).pushReplacement(
-                    PageTransitionSlideLeft(page: LoginPage()));
+                gotoNextPage(context);
               },
               child: Container(
                 height: .1 * MediaQuery.of(context).size.height,
@@ -161,6 +173,27 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
             )
           : Text(''),
     );
+  }
+
+  void gotoNextPage(BuildContext context) {
+    // Navigator.of(context).pushReplacement(
+    //   CupertinoPageRoute(
+    //     builder: (context) => HomePage(),
+    //   ),
+    // );
+
+    prefs.addBool("onboard", true);
+    prefs.readBool('login').then((val) {
+      if (val != true) {
+        setState(() {
+          Navigator.of(context)
+              .pushReplacement(PageTransitionSlideLeft(page: LoginPage()));
+        });
+      } else {
+        Navigator.of(context)
+            .pushReplacement(PageTransitionSlideLeft(page: HomePage()));
+      }
+    });
   }
 }
 
