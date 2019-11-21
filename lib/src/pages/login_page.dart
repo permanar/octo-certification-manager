@@ -27,27 +27,27 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _initSP();
+    // _initSP();
   }
 
   _initSP() {
     print("initsp");
     bool _isLoginz;
-    prefs.read('login').then((val) {
+    prefs.readBool('login').then((val) {
       _isLoginz = val;
       if (_isLoginz == true) {
         print("mantaapp if true loginpageee broo!!! => $_isLoginz)}");
         setState(() {
-          return Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => HomePage()));
+          return Navigator.of(context)
+              .pushReplacement(PageTransitionSlideLeft(page: HomePage()));
         });
       }
     });
   }
 
   void _loginProcess() {
-    prefs.add('login', true);
-    prefs.read('login').then((val) {
+    prefs.addBool('login', true);
+    prefs.readBool('login').then((val) {
       _isLogin = val;
       print("apasih isinya _isLogin ni kle | try => $_isLogin");
 
