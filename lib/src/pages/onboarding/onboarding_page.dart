@@ -1,4 +1,9 @@
+import 'package:bisma_certification/src/pages/home_page.dart';
+import 'package:bisma_certification/src/pages/login_page.dart';
 import 'package:bisma_certification/src/pages/onboarding/onboarding_content.dart';
+import 'package:bisma_certification/src/utils/page_transition.dart';
+import 'package:bisma_certification/src/utils/shared_prefs.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,12 +13,28 @@ class OnBoardingPage extends StatefulWidget {
 }
 
 class _OnBoardingPageState extends State<OnBoardingPage> {
+  SharedPrefs prefs = SharedPrefs();
   final int _numPages = 3;
   PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
 
-  //TODO Implement the Get Started button
-  void _getStarted() {}
+  @override
+  void initState() {
+    super.initState();
+    // _getStarted();
+  }
+
+  void _getStarted() {
+    print("initstate onboard");
+    prefs.readBool("onboard").then((val) {
+      if (val) {
+        print("ooo yeaaaa onboard borr =>> $val");
+        return Navigator.of(context)
+            .pushReplacement(PageTransitionSlideLeft(page: HomePage()));
+      }
+      return null;
+    });
+  }
 
   List<Widget> _buildIndicator() {
     List<Widget> list = [];
@@ -123,39 +144,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                   children: _buildIndicator(),
                 ),
                 _currentPage != _numPages - 1
-                    ? Expanded(
-                        child: Align(
-                          alignment: FractionalOffset.bottomRight,
-                          child: FlatButton(
-                            onPressed: () {
-                              _pageController.nextPage(
-                                duration: Duration(milliseconds: 500),
-                                curve: Curves.easeIn,
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Text(
-                                  "Next",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 5, bottom: 5),
-                                  child: Icon(
-                                    Icons.arrow_forward,
-                                    size: 28,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
+                    ? new NextButton(pageController: _pageController)
                     : Text("")
               ],
             ),
@@ -165,7 +154,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       bottomSheet: _currentPage == _numPages - 1
           ? InkWell(
               onTap: () {
-                print("get tart!!!");
+                gotoNextPage(context);
               },
               child: Container(
                 height: .1 * MediaQuery.of(context).size.height,
@@ -183,6 +172,72 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
               ),
             )
           : Text(''),
+    );
+  }
+
+  void gotoNextPage(BuildContext context) {
+    // Navigator.of(context).pushReplacement(
+    //   CupertinoPageRoute(
+    //     builder: (context) => HomePage(),
+    //   ),
+    // );
+
+    prefs.addBool("onboard", true);
+    prefs.readBool('login').then((val) {
+      if (val != true) {
+        setState(() {
+          Navigator.of(context)
+              .pushReplacement(PageTransitionSlideLeft(page: LoginPage()));
+        });
+      } else {
+        Navigator.of(context)
+            .pushReplacement(PageTransitionSlideLeft(page: HomePage()));
+      }
+    });
+  }
+}
+
+class NextButton extends StatelessWidget {
+  const NextButton({
+    Key key,
+    @required PageController pageController,
+  })  : _pageController = pageController,
+        super(key: key);
+
+  final PageController _pageController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Align(
+        alignment: FractionalOffset.bottomRight,
+        child: FlatButton(
+          onPressed: () {
+            _pageController.nextPage(
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeIn,
+            );
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                "Next",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5, bottom: 5),
+                child: Icon(
+                  Icons.arrow_forward,
+                  size: 28,
+                  color: Colors.white,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

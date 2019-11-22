@@ -53,3 +53,36 @@ class _ShowUpState extends State<ShowUp> with TickerProviderStateMixin {
     );
   }
 }
+
+// Loop Animation
+class MyBlinkingButton extends StatefulWidget {
+  @override
+  _MyBlinkingButtonState createState() => _MyBlinkingButtonState();
+}
+
+class _MyBlinkingButtonState extends State<MyBlinkingButton>
+    with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+
+  @override
+  void initState() {
+    _animationController =
+        new AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _animationController.repeat(reverse: true);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _animationController,
+      child: Text("Loading"),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+}
