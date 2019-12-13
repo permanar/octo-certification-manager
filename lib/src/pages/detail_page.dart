@@ -5,20 +5,22 @@ import 'dart:async';
 import 'package:bisma_certification/src/pages/checkout_page.dart';
 import 'package:bisma_certification/src/utils/page_transition.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:curl/curl.dart';
+import 'package:certification_repository/certification_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_money_formatter/flutter_money_formatter.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:bisma_certification/src/utils/shared_prefs.dart';
 import 'package:bisma_certification/src/widgets/custom_shape_clipper.dart';
 import 'package:http/http.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DetailPage extends StatefulWidget {
   final List<int> todos;
+  final Certification certification;
 
-  const DetailPage({Key key, this.todos}) : super(key: key);
+  const DetailPage({Key key, this.todos, this.certification}) : super(key: key);
 
   @override
   _DetailPageState createState() => _DetailPageState();
@@ -29,219 +31,200 @@ class _DetailPageState extends State<DetailPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   IconData favs = Icons.favorite_border;
   bool showBottomSheet = false, favsBool = false;
-  Set<String> unselectableDates;
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
-  sanitizeDateTime(DateTime dateTime) =>
-      "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+  Future isLoad() async {
+    await Future.delayed(Duration(seconds: 1));
+    return _refreshController.refreshCompleted();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      bottomNavigationBar: bottomNavDetailPage(context),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                ClipPath(
-                  clipper: CustomShapeClipper(),
-                  child: Container(
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height * .4,
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      gradient: LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        stops: [.1, .4, .7, .9],
-                        colors: [
-                          Color(0xff3584dd),
-                          Color(0xff4563db),
-                          Color(0xff5036d5),
-                          Color(0xff5b16d0)
-                        ],
-                      ),
-                    ),
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          "https://cdn.dribbble.com/users/1724007/screenshots/6652697/attachments/1421572/thumbnail/product_screen.png",
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Center(
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Center(
-                        child: Icon(
-                          Icons.error,
-                        ),
-                      ),
-                    ),
-                  ),
+    print("ehehee coba yuk detilll =>>>> ${widget.certification}");
+    final certification = widget.certification;
+    return FutureBuilder(
+        future: isLoad(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Scaffold(
+              body: Container(
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SpinKitPulse(color: Color(0xff0E4E95)),
+                    SizedBox(height: 20),
+                    Text("Getting Certification Detail"),
+                  ],
                 ),
-                SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
+              ),
+            );
+          }
+
+          return Scaffold(
+            key: _scaffoldKey,
+            resizeToAvoidBottomInset: true,
+            bottomNavigationBar: bottomNavDetailPage(context, certification),
+            body: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Stack(
+                    children: <Widget>[
+                      Hero(
+                        tag: certification.id,
+                        child: ClipPath(
+                          clipper: CustomShapeClipper(),
+                          child: Container(
+                            width: double.infinity,
+                            height: MediaQuery.of(context).size.height * .4,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                stops: [.1, .4, .7, .9],
+                                colors: [
+                                  Color(0xff3584dd),
+                                  Color(0xff4563db),
+                                  Color(0xff5036d5),
+                                  Color(0xff5b16d0)
+                                ],
+                              ),
+                            ),
+                            child: CachedNetworkImage(
+                              imageUrl: certification.image,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Center(
+                                child: Container(
+                                  height: 50,
+                                  width: 50,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Center(
+                                child: Icon(
+                                  Icons.error,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SafeArea(
+                        bottom: false,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              BackButton(
+                                color: Colors.white,
+                              ),
+                              Expanded(
+                                child: Container(),
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  bottomSheetCart(context, certification);
+                                },
+                                child: Icon(
+                                  Icons.shopping_cart,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        BackButton(
-                          color: Colors.white,
-                        ),
-                        Expanded(
-                          child: Container(),
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            bottomSheetCart(context);
-                          },
-                          child: Icon(
-                            Icons.shopping_cart,
-                            color: Colors.white,
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Container(
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      certification.name,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Container(),
+                                    ),
+                                    Container(
+                                      transform:
+                                          Matrix4.translationValues(0, -30, 0),
+                                      child: Row(
+                                        children: List.generate(5, (index) {
+                                          return _generateStar(context, index,
+                                              value: 3);
+                                        }),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * .85,
+                                    child: Text(
+                                      "Description",
+                                      textAlign: TextAlign.justify,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * .85,
+                                    child: GestureDetector(
+                                      onTap: () {},
+                                      child: Text(
+                                        certification.description,
+                                        textAlign: TextAlign.justify,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-            Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Container(
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Text(
-                                "Skema Programmer",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(),
-                              ),
-                              Container(
-                                transform: Matrix4.translationValues(0, -30, 0),
-                                child: Row(
-                                  children: List.generate(5, (index) {
-                                    return _generateStar(context, index,
-                                        value: 3);
-                                  }),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * .85,
-                              child: Text(
-                                "Description",
-                                textAlign: TextAlign.justify,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * .85,
-                              child: GestureDetector(
-                                onTap: () {
-                                  showDatePicker(
-                                    context: context,
-                                    firstDate: DateTime(2018),
-                                    initialDate: DateTime.now(),
-                                    lastDate: DateTime(2021),
-                                    // selectableDayPredicate: (DateTime val) {
-                                    //   String sanitized = sanitizeDateTime(val);
-                                    //   return !unselectableDates
-                                    //       .contains(sanitized);
-                                    // },
-                                    // selectableDayPredicate: (DateTime val) =>
-                                    //     val.weekday == 5 || val.weekday == 6
-                                    //         ? false
-                                    //         : true,
-                                  ).then((val) => print(
-                                      DateTime(val.year, val.month, val.day)));
-                                },
-                                child: Text(
-                                  "Pogrammer atau Pemrogram Aplikasi (KBJI: 2514.00; ISCO: 2514) memiliki tanggung jawab dalam menulis dan memelihara kode pemrograman yang diuraikan dalam instruksi dan spesifikasi teknis untuk aplikasi perangkat lunak dan sistem operasi. Skema Programmer bertujuan untuk digunakan sebagai acuan dalam kegiatan sertifikasi kompetensi jabatan kerja Programmer. Skema mengacu pada Standar Kompetensi Kerja Nasional Indonesia (SKKNI) Kategori Informasi dan Komunikasi Golongan Pokok Aktivitas Pemrograman, Konsultasi Komputer dan Kegiatan YBDI Bidang Software Development Subbidang Pemrograman Nomor 282 Tahun 2016 tanggal 8 November 2016.",
-                                  textAlign: TextAlign.justify,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  StreamBuilder(
-                    stream: Firestore.instance
-                        .collection("users")
-                        .orderBy("username", descending: true)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) return Text('Loading...');
-                      Future.delayed(Duration(seconds: 2));
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.documents.length,
-                        itemBuilder: (BuildContext context, int id) {
-                          return ListTile(
-                            title: Column(
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: Text(
-                                          "$id => ${snapshot.data.documents[id]['username']}"),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                          "${snapshot.data.documents[id]['pass']}"),
-                                    ),
-                                  ],
-                                ),
-                                // _test(id),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 
   Widget _generateStar(BuildContext context, int index, {int value}) {
@@ -260,7 +243,7 @@ class _DetailPageState extends State<DetailPage> {
     });
   }
 
-  Widget bottomNavDetailPage(context) {
+  Widget bottomNavDetailPage(context, Certification certification) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Container(
@@ -279,11 +262,19 @@ class _DetailPageState extends State<DetailPage> {
                 icon: Icon(Icons.add, color: Colors.white),
                 onPressed: () {
                   setState(() {
-                    prefs.addCart("cart", [
-                      'https://cdn.dribbble.com/users/2066845/screenshots/7057706/media/fb081170a9d922edb7628ac4f43e066d.png',
-                      "Schema Programmer",
-                      "450.000"
-                    ]);
+                    // prefs.delete('cart');
+                    prefs.addCart("cart", certification.id, value: {
+                      certification.id: {
+                        "image": certification.image,
+                        "name": certification.name,
+                        "price": certification.price,
+                        "qty": 1,
+                        "total": certification.price,
+                      }
+                    });
+                    prefs
+                        .readCart('cart')
+                        .then((val) => print("ni lo ech => $val"));
                   });
                   final snackbar = SnackBar(
                       content: Text("Schema Programmer added to cart"));
@@ -324,109 +315,163 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  bottomSheetCart(BuildContext context) async {
-    var carts = await prefs.readCart("cart");
-
-    double total = 0;
-    for (var i = 0; i < carts.length; i++) {
-      for (var j = 0; j < carts[i].length; j++) {
-        total += (j == 2) ? int.parse(carts[i][j].replaceAll(".", "")) : 0;
-      }
-    }
-
-    FlutterMoneyFormatter fmf = FlutterMoneyFormatter(
-      amount: total,
-      settings: MoneyFormatterSettings(
-        symbol: "IDR",
-        thousandSeparator: ".",
-        decimalSeparator: ",",
-        symbolAndNumberSeparator: " ",
-      ),
-    );
+  bottomSheetCart(BuildContext context, Certification certification) async {
+    // var carts = await prefs.readCart("cart");
 
     return showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-      ),
-      builder: (BuildContext bc) {
-        return Container(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "My Cart",
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Container(
-                  height: 195,
-                  child: FutureBuilder(
-                    future: buildShopCart(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return snapshot.data;
-                      } else {
-                        return CircularProgressIndicator();
-                      }
-                    },
-                  ),
-                ),
-                Divider(),
-                Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text("Subtotal:"),
-                          Text("Rp. ${fmf.output.nonSymbol}"),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xff5E4FD1),
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: FlatButton(
-                          onPressed: () {
-                            _makePayment();
-                            // setState(() {
-                            //   Navigator.of(context).push(
-                            //     PageTransitionSlideLeft(page: CheckoutPage()),
-                            //   );
-                            // });
-                          },
-                          highlightColor: Colors.transparent,
-                          child: Text(
-                            "Checkout",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
+        context: context,
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+        ),
+        builder: (BuildContext bc) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setModalState) {
+              return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          "My Cart",
+                          style: TextStyle(
+                            fontSize: 20,
                           ),
                         ),
-                      ),
+                        SizedBox(height: 20),
+                        Container(
+                          height: 195,
+                          child: FutureBuilder(
+                            future: buildShopCart(setModalState, certification),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return snapshot.data;
+                              } else {
+                                return Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      SpinKitPulse(color: Color(0xff0E4E95)),
+                                      SizedBox(height: 20),
+                                      Text("Loading Cart....."),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        Divider(),
+                        Column(
+                          children: <Widget>[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Subtotal:"),
+                                  FutureBuilder(
+                                    future: prefs.readCart('cart'),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        int total = 0;
+
+                                        for (var item in snapshot.data) {
+                                          print(item);
+                                          total += int.parse(
+                                              item[item.keys.first]['total']);
+                                        }
+                                        print(
+                                            'this is me snapshut =>>> ${snapshot.data}');
+
+                                        FlutterMoneyFormatter fmf =
+                                            FlutterMoneyFormatter(
+                                          amount:
+                                              double.parse(total.toString()),
+                                          settings: MoneyFormatterSettings(
+                                            symbol: "IDR",
+                                            thousandSeparator: ".",
+                                            decimalSeparator: ",",
+                                            symbolAndNumberSeparator: " ",
+                                          ),
+                                        );
+
+                                        return Text(
+                                            "Rp. ${fmf.output.nonSymbol}");
+                                      } else {
+                                        return Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              SpinKitPulse(
+                                                  color: Color(0xff0E4E95)),
+                                            ],
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xff5E4FD1),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              width: double.infinity,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 40),
+                                child: FlatButton(
+                                  onPressed: () {
+                                    // _makePayment();
+                                    setState(() {
+                                      Navigator.pop(context);
+                                      Navigator.of(context).push(
+                                        PageTransitionSlideLeft(
+                                            page: CheckoutPage()),
+                                      );
+                                    });
+                                  },
+                                  highlightColor: Colors.transparent,
+                                  child: Text(
+                                    "Checkout",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+              );
+            },
+          );
+        });
   }
 
   Future _makePayment() async {
@@ -521,9 +566,18 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
-  Future<Widget> buildShopCart() async {
+  Future<Widget> buildShopCart(
+    StateSetter setModalState,
+    Certification certification,
+  ) async {
     List cart = await prefs.readCart("cart");
+    List<String> cartKey = [];
+
+    for (var item in cart) {
+      cartKey.add(item.keys.first.toString());
+    }
     // print("heeyyoooo length => ${cart.length}\nheeyyoooo isinyaaaa => $cart\n");
+    cart.map((val) => print('kle ci nyusahin cart ni => $val'));
 
     return cart.length > 0
         ? ListView.builder(
@@ -531,19 +585,19 @@ class _DetailPageState extends State<DetailPage> {
             itemBuilder: (context, id) {
               return Dismissible(
                 onDismissed: (direction) {
-                  setState(() {
+                  setModalState(() {
                     prefs.deleteCart(id);
                   });
                 },
                 direction: DismissDirection.endToStart,
-                key: ValueKey(cart[id][1]),
+                key: ValueKey(cart[id][cartKey[id]]['name']),
                 background: Container(
                   color: Colors.grey[200],
                 ),
                 child: ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 0),
                   leading: CachedNetworkImage(
-                    imageUrl: cart[id][0],
+                    imageUrl: cart[id][cartKey[id]]['image'],
                     placeholder: (context, url) => Center(
                       child: Container(
                         height: 50,
@@ -557,9 +611,107 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                     ),
                   ),
-                  title: Text(cart[id][1]),
-                  subtitle: Text("Rp. ${cart[id][2]}"),
-                  trailing: Icon(Icons.close),
+                  title: Text(cart[id][cartKey[id]]['name']),
+                  isThreeLine: true,
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      FutureBuilder(
+                        future: prefs.readCart('cart'),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            FlutterMoneyFormatter fmf = FlutterMoneyFormatter(
+                              amount: double.parse(
+                                  snapshot.data[id][cartKey[id]]['price']),
+                              settings: MoneyFormatterSettings(
+                                symbol: "IDR",
+                                thousandSeparator: ".",
+                                decimalSeparator: ",",
+                                symbolAndNumberSeparator: " ",
+                              ),
+                            );
+
+                            return Text(
+                              "Rp. ${fmf.output.nonSymbol}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          } else {
+                            return CircularProgressIndicator();
+                          }
+                        },
+                      ),
+                      Text("Sistem Informasi"),
+                    ],
+                  ),
+                  trailing: Container(
+                    width: 105,
+                    child: Row(
+                      children: <Widget>[
+                        ButtonTheme(
+                          minWidth: 15,
+                          height: 10,
+                          child: RaisedButton(
+                            onPressed: () {
+                              print("terpencet decreased ${cartKey[id]}");
+                              if (cart[id][cartKey[id]]['qty'] <= 1) {
+                                return;
+                              }
+                              setModalState(() {
+                                prefs.decreaseCart("cart", cartKey[id]);
+                              });
+                            },
+                            highlightColor: Colors.transparent,
+                            elevation: 0,
+                            color: Color(0xffe2defc),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                bottomLeft: Radius.circular(10),
+                              ),
+                            ),
+                            child: Text(
+                              "-",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          cart[id][cartKey[id]]['qty'].toString(),
+                        ),
+                        ButtonTheme(
+                          minWidth: 15,
+                          height: 10,
+                          child: RaisedButton(
+                            onPressed: () {
+                              print("terpencet increased ${cartKey[id]}");
+                              setModalState(() {
+                                prefs.addCart("cart", cartKey[id]);
+                              });
+                            },
+                            highlightColor: Colors.transparent,
+                            elevation: 0,
+                            color: Color(0xffe2defc),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+                            ),
+                            child: Text(
+                              "+",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               );
             },
