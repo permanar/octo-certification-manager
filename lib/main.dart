@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bisma_certification/src/pages/home_page.dart';
 import 'package:bisma_certification/src/pages/onboarding/onboarding_page.dart';
 import 'package:bisma_certification/src/utils/shared_prefs.dart';
@@ -27,6 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'CM Sans Serif',
         platform: TargetPlatform.android,
+        scaffoldBackgroundColor: Color(0xFFF3F5F7),
       ),
       home: FutureBuilder(
         future: _initBro(),
