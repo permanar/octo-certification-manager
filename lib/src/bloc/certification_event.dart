@@ -18,3 +18,21 @@ class LoadAllFinished extends CertificationEvent {
   @override
   List<Object> get props => [certification];
 }
+
+class LoadSchedules extends CertificationEvent {
+  final int nim;
+
+  LoadSchedules(this.nim);
+
+  @override
+  List<Object> get props => [nim];
+}
+
+class LoadSchedulesFinished extends CertificationEvent {
+  final List<Schedules> schedule;
+
+  LoadSchedulesFinished(this.schedule);
+
+  @override
+  List<Object> get props => [schedule];
+}

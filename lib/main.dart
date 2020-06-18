@@ -1,4 +1,4 @@
-import 'package:bisma_certification/src/pages/home_page.dart';
+import 'package:bisma_certification/src/pages/home/home_page.dart';
 import 'package:bisma_certification/src/pages/onboarding/onboarding_page.dart';
 import 'package:bisma_certification/src/utils/shared_prefs.dart';
 import 'package:flutter/material.dart';

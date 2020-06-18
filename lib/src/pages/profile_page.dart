@@ -1,5 +1,7 @@
+import 'package:bisma_certification/src/widgets/timeline.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 class ProfilePage extends StatefulWidget {
   final int currentPage;
@@ -57,6 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
       child: Container(
+        height: 35,
         decoration: BoxDecoration(
             color: isActive ? Colors.black26 : Colors.transparent,
             borderRadius: BorderRadius.all(Radius.circular(30))),
@@ -80,142 +83,187 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Container(
-              height: 350,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Color(0xFF3C5AC8),
-                borderRadius:
-                    BorderRadius.only(bottomLeft: Radius.circular(50)),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 16, left: 16, right: 16, bottom: 0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text(
-                        "Richie Permana",
-                        style: TextStyle(
-                          color: Color.fromARGB(200, 255, 255, 255),
-                          fontSize: 20,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 50),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Container(
+                height: 350,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Color(0xFF3C5AC8),
+                  borderRadius:
+                      BorderRadius.only(bottomLeft: Radius.circular(50)),
+                ),
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 16, left: 16, right: 16, bottom: 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          "Richie Permana",
+                          style: TextStyle(
+                            color: Color.fromARGB(200, 255, 255, 255),
+                            fontSize: 20,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 30),
-                      Stack(
-                        children: [
-                          Center(
-                            child: Container(
-                              height: 155,
-                              width: 155,
-                              decoration: BoxDecoration(
-                                color: Colors.white12,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(500)),
-                              ),
-                            ),
-                          ),
-                          Center(
-                            child: Container(
-                              height: 125,
-                              width: 125,
-                              margin: const EdgeInsets.only(top: 15),
-                              decoration: BoxDecoration(
-                                color: Colors.white24,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(500)),
-                              ),
-                            ),
-                          ),
-                          Center(
-                            child: Container(
-                              height: 115,
-                              width: 115,
-                              margin: const EdgeInsets.only(top: 20),
-                              child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(500)),
-                                child: Image(
-                                  image: CachedNetworkImageProvider(
-                                      "https://media.licdn.com/dms/image/C5103AQEL4MVxtgC6UQ/profile-displayphoto-shrink_200_200/0?e=1577318400&v=beta&t=TpxcHUstE_M7F77Xshwb2x16cHjdmjnaMEOz6iNx378"),
-                                  fit: BoxFit.fill,
+                        SizedBox(height: 30),
+                        Stack(
+                          children: [
+                            Center(
+                              child: Container(
+                                height: 155,
+                                width: 155,
+                                decoration: BoxDecoration(
+                                  color: Colors.white12,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(500)),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints.expand(),
+                            Center(
+                              child: Container(
+                                height: 125,
+                                width: 125,
+                                margin: const EdgeInsets.only(top: 15),
+                                decoration: BoxDecoration(
+                                  color: Colors.white24,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(500)),
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Container(
+                                height: 115,
+                                width: 115,
+                                margin: const EdgeInsets.only(top: 20),
+                                child: ClipRRect(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(500)),
+                                  child: Image(
+                                    image: CachedNetworkImageProvider(
+                                        "https://media.licdn.com/dms/image/C5103AQEL4MVxtgC6UQ/profile-displayphoto-shrink_200_200/0?e=1577318400&v=beta&t=TpxcHUstE_M7F77Xshwb2x16cHjdmjnaMEOz6iNx378"),
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Container(
-                        height: 35,
-                        margin: const EdgeInsets.only(left: 10),
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: _buildTabBarView(),
+                        Expanded(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints.expand(),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 255, 242, 219),
-                borderRadius:
-                    BorderRadius.only(bottomLeft: Radius.circular(50)),
-              ),
-              // transform: Matrix4.translationValues(0, -50, 0),
-            ),
-            Container(
-              height: 200,
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (int page) {
-                  setState(() {
-                    _currentPage = page;
-                  });
-                },
-                children: <Widget>[
-                  Container(
-                    child: Row(
-                      children: <Widget>[
-                        Text("Richie Permanasss"),
+                        Container(
+                          height: 50,
+                          // margin: const EdgeInsets.only(left: 10),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF3C5AC8),
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(50)),
+                          ),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: _buildTabBarView(),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Row(
-                    children: <Widget>[
-                      Center(child: Text("Richie Permana")),
-                    ],
+                ),
+              ),
+              Column(
+                children: <Widget>[
+                  Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 255, 242, 219),
+                      borderRadius:
+                          BorderRadius.only(bottomLeft: Radius.circular(50)),
+                    ),
+                    // transform: Matrix4.translationValues(0, -50, 0),
                   ),
-                  Row(
-                    children: <Widget>[
-                      Center(child: Text("Richie Permana")),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Center(child: Text("Richie Permana")),
-                    ],
+                  Container(
+                    height: 200,
+                    child: PageView(
+                      controller: _pageController,
+                      onPageChanged: (int page) {
+                        setState(() {
+                          _currentPage = page;
+                        });
+                      },
+                      children: <Widget>[
+                        ListView(
+                          children: <Widget>[
+                            Timeline(
+                              children: <Widget>[
+                                Container(
+                                    height: 100, color: Colors.blueAccent),
+                                Container(height: 50, color: Colors.blueAccent),
+                                Container(
+                                    height: 200, color: Colors.blueAccent),
+                                Container(
+                                    height: 100, color: Colors.blueAccent),
+                              ],
+                              indicators: <Widget>[
+                                Icon(Icons.access_alarm),
+                                Icon(Icons.backup),
+                                Icon(Icons.accessibility_new),
+                                Icon(Icons.access_alarm),
+                              ],
+                            ),
+                          ],
+                        ),
+                        ListView(
+                          children: <Widget>[
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                            Center(child: Text("Richie Permana")),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Center(child: Text("Richie Permana")),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Center(child: Text("Richie Permana")),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

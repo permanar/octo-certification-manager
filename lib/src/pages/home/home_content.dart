@@ -1,6 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bisma_certification/src/pages/detail_page.dart';
+import 'package:bisma_certification/src/utils/bottom_sheet.dart';
 import 'package:bisma_certification/src/utils/page_transition.dart';
 import 'package:bisma_certification/src/widgets/certifications_carousel.dart';
+import 'package:bisma_certification/src/widgets/discover_carousel.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:certification_repository/certification_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +15,21 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 class HomeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var device = MediaQuery.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "Bisma Certification",
           style: TextStyle(
-            color: Colors.red[300],
+            color: Colors.blue[300],
           ),
         ),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 15),
+            child: BottomSheetCart(color: Colors.blue),
+          ),
+        ],
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -28,7 +39,7 @@ class HomeContent extends StatelessWidget {
           ..add(LoadAll()),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 100),
+            padding: const EdgeInsets.only(left: 15, right: 15, bottom: 100),
             child: Container(
               child: Column(
                 // overflow: Overflow.visible,
@@ -64,58 +75,20 @@ class HomeContent extends StatelessWidget {
                       itemHeight: 150,
                     ),
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 15, right: 15, bottom: 30),
-                    child: Column(
-                      children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            SizedBox(height: 20),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    'Most Picked Certifications',
-                                    style: TextStyle(
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.5,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () => print('See All'),
-                                    child: Text(
-                                      'See All',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            BlocBuilder<CertificationBloc, CertificationState>(
-                              builder: (context, state) =>
-                                  CertificationCarousel(
-                                context: context,
-                                certificationBloc:
-                                    BlocProvider.of<CertificationBloc>(context),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        Text("data"),
-                      ],
+                  BlocBuilder<CertificationBloc, CertificationState>(
+                    builder: (context, state) => CertificationCarousel(
+                      context: context,
+                      certificationBloc:
+                          BlocProvider.of<CertificationBloc>(context),
                     ),
-                  )
+                  ),
+                  BlocBuilder<CertificationBloc, CertificationState>(
+                    builder: (context, state) => DiscoverCarousel(
+                      context: context,
+                      certificationBloc:
+                          BlocProvider.of<CertificationBloc>(context),
+                    ),
+                  ),
                 ],
               ),
             ),

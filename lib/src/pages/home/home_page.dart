@@ -1,4 +1,5 @@
-import 'package:bisma_certification/src/pages/home_content.dart';
+import 'package:bisma_certification/src/pages/home/home_content.dart';
+import 'package:bisma_certification/src/pages/myclass_page.dart';
 import 'package:bisma_certification/src/pages/profile_page.dart';
 import 'package:bisma_certification/src/utils/shared_prefs.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +18,8 @@ class _HomePageState extends State<HomePage> {
   bool _isLogin;
   List<Widget> _widgetOptions = <Widget>[
     HomeContent(),
+    ProfilePage(),
+    MyClass(),
     ProfilePage(),
   ];
 
@@ -102,17 +105,21 @@ class _HomePageState extends State<HomePage> {
       //     }
       //   },
       // ),
-      body: _widgetOptions.elementAt(_currentPage),
-      extendBody: true,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => ProfilePage()));
-        },
+      body: IndexedStack(
+        index: _currentPage,
+        children: _widgetOptions,
       ),
+      extendBody: true,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: FloatingActionButton(
+      //   child: Icon(Icons.add),
+      //   onPressed: () {
+      //     Navigator.of(context)
+      //         .push(MaterialPageRoute(builder: (context) => ProfilePage()));
+      //   },
+      // ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: _currentPage,
         onTap: (int index) {
           setState(() {
@@ -127,6 +134,14 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             title: Text("Home"),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            title: Text("Search"),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.date_range),
+            title: Text("My Class"),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people),

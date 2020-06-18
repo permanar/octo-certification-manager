@@ -28,165 +28,199 @@ class CertificationCarousel extends StatelessWidget {
         if (state is Ready) {
           final certifications = state.certification;
 
-          return Container(
-            height: 300.0,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: certifications.length,
-              itemBuilder: (BuildContext context, int index) {
-                final certification = certifications[index];
-
-                FlutterMoneyFormatter fmf = FlutterMoneyFormatter(
-                  amount: double.parse(certification.price),
-                  settings: MoneyFormatterSettings(
-                    symbol: "IDR",
-                    thousandSeparator: ".",
-                    decimalSeparator: ",",
-                    symbolAndNumberSeparator: " ",
+          return Column(
+            children: <Widget>[
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    'Most Picked Certifications',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
                   ),
-                );
+                  GestureDetector(
+                    onTap: () => print('See All'),
+                    child: Text(
+                      'See All',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                height: 300.0,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: certifications.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final certification = certifications[index];
 
-                return GestureDetector(
-                  onTap: () {
-                    // certificationBloc.add(LoadDetail());
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (context) => DetailPage(
-                          certification: certification,
-                        ),
+                    FlutterMoneyFormatter fmf = FlutterMoneyFormatter(
+                      amount: double.parse(certification.price),
+                      settings: MoneyFormatterSettings(
+                        symbol: "IDR",
+                        thousandSeparator: ".",
+                        decimalSeparator: ",",
+                        symbolAndNumberSeparator: " ",
                       ),
                     );
-                  },
-                  child: Container(
-                    margin: EdgeInsets.all(10.0),
-                    width: 210.0,
-                    child: Stack(
-                      alignment: Alignment.topCenter,
-                      children: <Widget>[
-                        Positioned(
-                          bottom: 15.0,
-                          child: Container(
-                            height: 120.0,
-                            width: 200.0,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(10.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    certification.name,
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 1.2,
-                                    ),
-                                  ),
-                                  AutoSizeText(
-                                    certification.description,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
+
+                    return GestureDetector(
+                      onTap: () {
+                        // certificationBloc.add(LoadDetail());
+                        Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (context) => DetailPage(
+                              certification: certification,
                             ),
                           ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                offset: Offset(0.0, 2.0),
-                                blurRadius: 6.0,
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: <Widget>[
-                              Hero(
-                                tag: certification.id,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  child: Image(
-                                    height: 180.0,
-                                    width: 180.0,
-                                    image: CachedNetworkImageProvider(
-                                      certification.image,
-                                    ),
-                                    fit: BoxFit.cover,
+                        );
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 10),
+                        width: 210.0,
+                        child: Stack(
+                          alignment: Alignment.topCenter,
+                          children: <Widget>[
+                            Positioned(
+                              bottom: 15.0,
+                              child: Container(
+                                height: 120.0,
+                                width: 200.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        certification.name,
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 1.2,
+                                        ),
+                                      ),
+                                      AutoSizeText(
+                                        certification.description,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                              Positioned(
-                                left: 10.0,
-                                bottom: 10.0,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    AutoSizeText(
-                                      certification.name,
-                                      maxLines: 1,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 1.2,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    offset: Offset(0.0, 2.0),
+                                    blurRadius: 6.0,
+                                  ),
+                                ],
+                              ),
+                              child: Stack(
+                                children: <Widget>[
+                                  Hero(
+                                    tag: certification.id,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      child: Image(
+                                        height: 180.0,
+                                        width: 180.0,
+                                        image: CachedNetworkImageProvider(
+                                          certification.image,
+                                        ),
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
+                                  ),
+                                  Positioned(
+                                    left: 10.0,
+                                    bottom: 10.0,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
+                                        AutoSizeText(
+                                          certification.name,
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 1.2,
+                                          ),
+                                        ),
                                         Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
                                           children: <Widget>[
-                                            Icon(
-                                              FontAwesomeIcons.locationArrow,
-                                              size: 10.0,
-                                              color: Colors.white,
+                                            Row(
+                                              children: <Widget>[
+                                                Icon(
+                                                  FontAwesomeIcons
+                                                      .locationArrow,
+                                                  size: 10.0,
+                                                  color: Colors.white,
+                                                ),
+                                                SizedBox(width: 5.0),
+                                                Text(
+                                                  certification.id,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            SizedBox(width: 5.0),
-                                            Text(
-                                              certification.id,
+                                            SizedBox(
+                                              width: 30,
+                                            ),
+                                            AutoSizeText(
+                                              "Rp. ${fmf.output.nonSymbol}",
                                               style: TextStyle(
-                                                color: Colors.white,
+                                                color: Colors.greenAccent,
                                                 fontSize: 12,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        SizedBox(
-                                          width: 30,
-                                        ),
-                                        AutoSizeText(
-                                          "Rp. ${fmf.output.nonSymbol}",
-                                          style: TextStyle(
-                                            color: Colors.greenAccent,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         } else if (state is Loading) {
           return Column(

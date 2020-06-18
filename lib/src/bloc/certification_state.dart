@@ -20,4 +20,13 @@ class Ready extends CertificationState {
   String toString() => "CertificationReady { certification: $certification }";
 }
 
+class SchedulesReady extends CertificationState {
+  final List<Schedules> schedule;
+
+  SchedulesReady([this.schedule]);
+
+  @override
+  List<Object> get props => [schedule];
+}
+
 class Loading extends CertificationState {}

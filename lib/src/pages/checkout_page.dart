@@ -1,5 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bisma_certification/src/pages/payment_page.dart';
+import 'package:bisma_certification/src/pages/payment/payment_page.dart';
 import 'package:bisma_certification/src/pages/profile_page.dart';
 import 'package:bisma_certification/src/utils/page_transition.dart';
 import 'package:bisma_certification/src/utils/shared_prefs.dart';
@@ -18,6 +18,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    MediaQueryData device = MediaQuery.of(context);
+
     return Scaffold(
       key: _scaffoldKey,
       bottomNavigationBar: bottomNavDetailPage(context),
@@ -36,7 +38,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         child: Container(
-          height: MediaQuery.of(context).size.height,
+          height: device.size.height,
           child: ListView(
             children: <Widget>[
               Column(
@@ -45,7 +47,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ConstrainedBox(
                     constraints: BoxConstraints(
                       minHeight: 150,
-                      maxHeight: 250,
+                      maxHeight: device.size.height * .4,
                     ),
                     child: FutureBuilder(
                       initialData: CircularProgressIndicator(),
@@ -143,7 +145,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
-                          width: MediaQuery.of(context).size.width * .4,
+                          width: device.size.width * .4,
                           child: Text(
                             "Jln Kebo Iwa Utara Gang Danau Tawar II No. 3x",
                             style: TextStyle(
@@ -351,7 +353,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 if (cart[id][cartKey[id]]['qty'] <= 1) {
                                   return;
                                 }
-                                prefs.decreaseCart("cart", "LSPP");
+                                prefs.decreaseCart("cart", cartKey[id]);
                               });
                             },
                             highlightColor: Colors.transparent,
@@ -380,7 +382,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           child: RaisedButton(
                             onPressed: () {
                               setState(() {
-                                prefs.addCart("cart", "LSPP");
+                                prefs.addCart("cart", cartKey[id]);
                               });
                             },
                             highlightColor: Colors.transparent,

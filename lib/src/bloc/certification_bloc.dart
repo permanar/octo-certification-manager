@@ -7,7 +7,8 @@ import './bloc.dart';
 
 class CertificationBloc extends Bloc<CertificationEvent, CertificationState> {
   final CertificationRepository _certificationRepository;
-  StreamSubscription _certificationsubscription;
+  StreamSubscription _certificationSubscription;
+  StreamSubscription _scheduleSubscription;
 
   CertificationBloc({@required CertificationRepository certificationRepository})
       : assert(certificationRepository != null),
@@ -26,11 +27,17 @@ class CertificationBloc extends Bloc<CertificationEvent, CertificationState> {
     if (event is LoadAllFinished) {
       yield* _mapLoadAllFinishedToState(event);
     }
+    if (event is LoadSchedules) {
+      yield* _mapLoadSchedulesToState(event);
+    }
+    if (event is LoadSchedulesFinished) {
+      yield* _mapLoadSchedulesFinishedToState(event);
+    }
   }
 
   Stream<CertificationState> _mapLoadAllToState(LoadAll event) async* {
-    _certificationsubscription?.cancel();
-    _certificationsubscription =
+    _certificationSubscription?.cancel();
+    _certificationSubscription =
         _certificationRepository.getAll().listen((val) {
       add(LoadAllFinished(val));
     });
@@ -41,9 +48,26 @@ class CertificationBloc extends Bloc<CertificationEvent, CertificationState> {
     yield Ready(event.certification);
   }
 
+  Stream<CertificationState> _mapLoadSchedulesToState(
+      LoadSchedules event) async* {
+    print("ini masuk ke state boskuh");
+
+    _scheduleSubscription?.cancel();
+    _scheduleSubscription =
+        _certificationRepository.getScheduleDetail(event.nim).listen((val) {
+      add(LoadSchedulesFinished(val));
+    });
+  }
+
+  Stream<CertificationState> _mapLoadSchedulesFinishedToState(
+      LoadSchedulesFinished event) async* {
+    yield SchedulesReady(event.schedule);
+  }
+
   @override
   Future<void> close() {
-    _certificationsubscription?.cancel();
+    _certificationSubscription?.cancel();
+    _scheduleSubscription?.cancel();
     return super.close();
   }
 }

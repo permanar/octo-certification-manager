@@ -1,4 +1,4 @@
-import 'package:bisma_certification/src/pages/home_page.dart';
+import 'package:bisma_certification/src/pages/home/home_page.dart';
 import 'package:bisma_certification/src/pages/sign_up_page.dart';
 import 'package:bisma_certification/src/themes/custom_icons.dart';
 import 'package:bisma_certification/src/utils/page_transition.dart';
